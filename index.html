@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Cost Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+    --primary: #4361ee;
+    --primary-dark: #3a56d4;
+    --secondary: #3f37c9;
+    --accent: #4895ef;
+    --danger: #f72585;
+    --success: #4cc9f0;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --gray: #6c757d;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --shadow: 0 10px 20px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--light);
+    color: var(--dark);
+    line-height: 1.6;
+}
+
+/* Auth Container */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+    background: linear-gradient(-45deg, #4361ee, #3f37c9, #4895ef, #4cc9f0);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.auth-card {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 450px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Logo Header */
+.logo-header {
+    background: var(--primary);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo-header i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    background: white;
+    color: var(--primary);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.logo-header h1 {
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin-top: 0.5rem;
+}
+
+/* Forms */
+.forms-container {
+    padding: 2rem;
+    position: relative;
+    min-height: 90vh;
+}
+
+.auth-form {
+    position: absolute;
+    width: calc(100% - 4rem);
+    transition: var(--transition);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(30px);
+}
+
+.auth-form.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+}
+
+.auth-form h2 {
+    margin-bottom: 1.5rem;
+    color: var(--dark);
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Input Groups */
+.input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+    transition: var(--transition);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px 15px 15px 45px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: var(--transition);
+    background: #f8f9fa;
+}
+
+.input-group input:focus {
+    border-color: var(--primary);
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+}
+
+.input-group input:focus + i {
+    color: var(--primary);
+}
+
+.toggle-password {
+    left: auto !important;
+    right: 15px;
+    cursor: pointer;
+}
+
+/* Buttons */
+.auth-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: var(--transition);
+    margin-top: 1rem;
+}
+
+.auth-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+.text-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: left;
+    margin-top: 0.5rem;
+    display: inline-block;
+}
+
+.text-btn:hover {
+    text-decoration: underline;
+}
+
+/* Form Footer */
+.form-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--gray);
+}
+
+.form-footer a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.form-footer a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* Error Message */
+.error-message {
+    background: #fee;
+    color: var(--danger);
+    padding: 1rem;
+    margin: 0 2rem 2rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    display: none;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+/* Dashboard Styles */
+#user-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.sign-out-btn {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sign-out-btn:hover {
+    background: #e5177e;
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.controls select, .controls input {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    flex-grow: 1;
+}
+
+.controls button {
+    padding: 0.5rem 1rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+/* Task List */
+#task-list {
+    list-style: none;
+}
+
+#task-list li {
+    background: white;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#task-list li span {
+    flex-grow: 1;
+}
+
+#task-list li button {
+    background: var(--danger);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 0.5rem;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000; /* Higher z-index to ensure it's on top */
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  animation: fadeInUp 0.3s ease-out;
+  
+}
+
+.close-modal {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.modal-content h3 {
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.modal-content button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 1rem;
+    }
+    
+    .auth-card {
+        border-radius: 12px;
+    }
+    
+    .logo-header {
+        padding: 1.5rem;
+    }
+    
+    .forms-container {
+        padding: 1.5rem;
+    }
+    
+    .controls {
+        flex-direction: column;
+    }
+    
+    .controls select, .controls input, .controls button {
+        width: 100%;
+    }
+}
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="logo-header">
+                <i class="fas fa-lock"></i>
+                <h1>TodoCost</h1>
+            </div>
+            
+            <div class="forms-container">
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form active">
+                    <h2>Login</h2>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="login-email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="login-password" placeholder="Password" required>
+                        <i class="fas fa-eye toggle-password"></i>
+                    </div>
+                    <button type="submit" class="auth-btn">Login</button>
+                    <a href="forgot.html" id="forgot-password" class="text-btn">Forgot password?</a>
+                    <p class="form-footer">
+                        Don't have an account? <a href="#" id="show-signup">Sign Up</a>
+                    </p>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="auth-form">
+                    <h2>Sign Up</h2>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="signup-name" placeholder="Full Name" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signup-email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signup-password" placeholder="Password" required>
+                        <i class="fas fa-eye toggle-password"></i>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signup-confirm" placeholder="Confirm Password" required>
+                    </div>
+                    <button type="submit" class="auth-btn">Sign Up</button>
+                    <p class="form-footer">
+                        Already have an account? <a href="#" id="show-login">Login</a>
+                    </p>
+                </form>
+            </div>
+            
+            <div id="auth-error" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="user-container" style="display: none;">
+        <div class="header">
+            <h1>TodoCost</h1>
+            <button id="sign-out-btn" class="sign-out-btn">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </div>
+        
+        <div class="controls">
+            <select id="input-type">
+                <option value="text">Text Note</option>
+                <option value="number">Cost Entry</option>
+            </select>
+            
+            <input type="text" id="task-input" placeholder="Description">
+            <input type="number" id="cost-input" placeholder="Amount" style="display: none;">
+            <button id="add-task-btn">Add</button>
+            
+            <div class="summary">
+                <span id="total-display">Total: $0.00</span>
+                <button id="calculate-btn">Calculate</button>
+                <button id="delete-all-btn">Delete All</button>
+            </div>
+        </div>
+
+        <ul id="task-list"></ul>
+
+        <!-- Reset Password Modal -->
+        <div id="reset-modal" class="modal">
+            <p>hi</p>
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3>Reset Password</h3>
+                <input type="email" id="reset-email" placeholder="Your email">
+                <button id="send-code-btn">Send Verification Code</button>
+                <div id="code-section" style="display:none;">
+                    <input type="text" id="verification-code" placeholder="Enter code">
+                    <input type="password" id="new-password" placeholder="New password">
+                    <button id="verify-code-btn">Reset Password</button>
+                </div>
+                <p id="reset-error" class="error-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>document.addEventListener('DOMContentLoaded', function() {
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyCvF2BV5MBU6AMQOByD9Q5g4wZXF0a9W1g",
+        authDomain: "movement-player.firebaseapp.com",
+        projectId: "movement-player",
+        storageBucket: "movement-player.appspot.com",
+        messagingSenderId: "55543297155",
+        appId: "1:55543297155:web:b8ef612f7041bcab7617b6",
+        measurementId: "G-0PPZM7EXZM"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // DOM Elements
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const showSignup = document.getElementById('show-signup');
+    const showLogin = document.getElementById('show-login');
+    const authError = document.getElementById('auth-error');
+    const authContainer = document.querySelector('.auth-container');
+    const userContainer = document.getElementById('user-container');
+    const userEmailElement = document.getElementById('user-email');
+    const forgotPasswordLink = document.getElementById('forgot-password');
+    const resetModal = document.getElementById('reset-modal');
+    const closeModal = document.querySelector('.close-modal');
+    const sendCodeBtn = document.getElementById('send-code-btn');
+    const verifyCodeBtn = document.getElementById('verify-code-btn');
+    const codeSection = document.getElementById('code-section');
+    const resetError = document.getElementById('reset-error');
+    const taskInput = document.getElementById('task-input');
+    const costInput = document.getElementById('cost-input');
+    const addTaskBtn = document.getElementById('add-task-btn');
+    const taskList = document.getElementById('task-list');
+    const totalDisplay = document.getElementById('total-display');
+    const calculateBtn = document.getElementById('calculate-btn');
+    const deleteAllBtn = document.getElementById('delete-all-btn');
+    const inputTypeSelect = document.getElementById('input-type');
+    const signOutBtn = document.getElementById('sign-out-btn');
+
+    let tasksRef;
+    const verificationCodes = {};
+
+    // Password Visibility Toggle
+    document.querySelectorAll('.toggle-password').forEach(icon => {
+        icon.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            this.classList.toggle('fa-eye-slash', isPassword);
+            this.classList.toggle('fa-eye', !isPassword);
+        });
+    });
+
+    // Form Switching
+    showSignup.addEventListener('click', function(e) {
+        e.preventDefault();
+        loginForm.classList.remove('active');
+        setTimeout(() => {
+            signupForm.classList.add('active');
+        }, 300);
+        clearError();
+    });
+
+    showLogin.addEventListener('click', function(e) {
+        e.preventDefault();
+        signupForm.classList.remove('active');
+        setTimeout(() => {
+            loginForm.classList.add('active');
+        }, 300);
+        clearError();
+    });
+
+    // Error Handling
+    function showError(message) {
+        authError.textContent = message;
+        authError.style.display = 'block';
+        setTimeout(() => {
+            authError.style.animation = 'none';
+            void authError.offsetWidth; // Trigger reflow
+            authError.style.animation = 'shake 0.5s';
+        }, 10);
+    }
+
+    function clearError() {
+        authError.style.display = 'none';
+        authError.style.animation = 'none';
+    }
+
+    // Login Function
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        if (!email || !password) {
+            showError('Please fill in all fields');
+            return;
+        }
+
+        auth.signInWithEmailAndPassword(email, password)
+            .then(() => {
+                clearError();
+            })
+            .catch((error) => {
+                showError(getErrorMessage(error.code));
+            });
+    });
+
+    // Signup Function
+    signupForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('signup-name').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        const confirmPassword = document.getElementById('signup-confirm').value;
+
+        if (!name || !email || !password || !confirmPassword) {
+            showError('Please fill in all fields');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            showError('Passwords do not match');
+            return;
+        }
+
+        if (password.length < 6) {
+            showError('Password must be at least 6 characters');
+            return;
+        }
+
+        auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                return userCredential.user.updateProfile({
+                    displayName: name
+                });
+            })
+            .then(() => {
+                clearError();
+            })
+            .catch((error) => {
+                showError(getErrorMessage(error.code));
+            });
+    });
+
+    inputTypeSelect.addEventListener('change', function() {
+        costInput.style.display = this.value === 'number' ? 'block' : 'none';
+    });
+
+    function initCostTracker(user) {
+        tasksRef = db.collection('users').doc(user.uid).collection('costs');
+        
+        addTaskBtn.addEventListener('click', addCost);
+        taskInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addCost();
+        });
+
+        function addCost() {
+            const description = taskInput.value.trim();
+            const inputType = inputTypeSelect.value;
+            
+            if (!description) {
+                alert('Please enter a description');
+                return;
+            }
+
+            const costData = {
+                description: description,
+                type: inputType,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (inputType === 'number') {
+                const amount = parseFloat(costInput.value) || 0;
+                costData.amount = amount;
+            }
+
+            tasksRef.add(costData)
+                .then(() => {
+                    taskInput.value = '';
+                    costInput.value = '';
+                })
+                .catch(error => {
+                    console.error("Error adding cost: ", error);
+                });
+        }
+
+        // Load and display costs
+        tasksRef.orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+            taskList.innerHTML = '';
+            let total = 0;
+
+            snapshot.forEach(doc => {
+                const cost = doc.data();
+                const li = document.createElement('li');
+                li.dataset.id = doc.id;
+
+                // Edit button
+                const editBtn = document.createElement('button');
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                editBtn.className = 'icon-btn';
+                editBtn.style.background = 'var(--warning)';
+                editBtn.addEventListener('click', () => editCost(doc.id, cost));
+
+                // Delete button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.className = 'icon-btn';
+                deleteBtn.style.background = 'var(--danger)';
+                deleteBtn.addEventListener('click', () => deleteCost(doc.id));
+
+                // Cost item content
+                const span = document.createElement('span');
+                if (cost.type === 'number') {
+                    span.textContent = `${cost.description}: $${cost.amount?.toFixed(2) || '0.00'}`;
+                    total += cost.amount || 0;
+                } else {
+                    span.textContent = cost.description;
+                }
+
+                li.appendChild(span);
+                li.appendChild(editBtn);
+                li.appendChild(deleteBtn);
+                taskList.appendChild(li);
+            });
+
+            totalDisplay.textContent = `Total: $${total.toFixed(2)}`;
+        });
+
+        function editCost(id, currentData) {
+            const newDesc = prompt('Edit description:', currentData.description);
+            if (newDesc === null) return;
+
+            const updateData = { description: newDesc };
+            
+            if (currentData.type === 'number') {
+                const newAmount = parseFloat(prompt('Edit amount:', currentData.amount));
+                if (!isNaN(newAmount)) {
+                    updateData.amount = newAmount;
+                }
+            }
+
+            tasksRef.doc(id).update(updateData)
+                .catch(error => {
+                    console.error("Error updating cost: ", error);
+                });
+        }
+
+        function deleteCost(id) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                tasksRef.doc(id).delete()
+                    .catch(error => {
+                        console.error("Error deleting cost: ", error);
+                    });
+            }
+        }
+
+        // Calculate total
+        calculateBtn.addEventListener('click', function() {
+            tasksRef.get().then(snapshot => {
+                let total = 0;
+                snapshot.forEach(doc => {
+                    const cost = doc.data();
+                    if (cost.type === 'number') {
+                        total += cost.amount || 0;
+                    }
+                });
+                alert(`Total costs: $${total.toFixed(2)}`);
+            });
+        });
+
+        // Delete all costs with confirmation
+        deleteAllBtn.addEventListener('click', function() {
+            const confirmationCode = Math.floor(Math.random() * 1000 + 100);
+            const userInput = prompt(`Type ${confirmationCode} to confirm deletion of ALL items:`);
+            
+            if (userInput && userInput === confirmationCode.toString()) {
+                if (confirm('Are you REALLY sure? This cannot be undone!')) {
+                    if (confirm('LAST WARNING! All your data will be gone!')) {
+                        tasksRef.get().then(snapshot => {
+                            const batch = db.batch();
+                            snapshot.forEach(doc => {
+                                batch.delete(doc.ref);
+                            });
+                            return batch.commit();
+                        })
+                        .then(() => {
+                            alert('All data deleted successfully');
+                        })
+                        .catch(error => {
+                            console.error("Error deleting data: ", error);
+                        });
+                    }
+                }
+            } else if (userInput !== null) {
+                alert('Incorrect confirmation code. Deletion cancelled.');
+            }
+        });
+    }
+
+    // Sign out
+    signOutBtn.addEventListener('click', function() {
+        auth.signOut().catch(error => {
+            console.error("Error signing out: ", error);
+        });
+    });
+
+    // Auth State Observer
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            authContainer.style.display = 'none';
+            userContainer.style.display = 'block';
+            if (userEmailElement) userEmailElement.textContent = user.email;
+            initCostTracker(user);
+        } else {
+            authContainer.style.display = 'flex';
+            userContainer.style.display = 'none';
+        }
+    });
+
+    // Error Message Mapping
+    function getErrorMessage(code) {
+        const messages = {
+            'auth/invalid-email': 'Invalid email address',
+            'auth/user-disabled': 'Account disabled',
+            'auth/user-not-found': 'Account not found',
+            'auth/wrong-password': 'Incorrect password',
+            'auth/email-already-in-use': 'Email already in use',
+            'auth/operation-not-allowed': 'Operation not allowed',
+            'auth/weak-password': 'Password is too weak',
+            'auth/too-many-requests': 'Too many attempts. Try again later',
+            'default': 'An error occurred. Please try again'
+        };
+        return messages[code] || messages['default'];
+    }
+});</script>
+</body>
+</html>
