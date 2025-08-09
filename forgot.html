@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TodoCost - Reset Password</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <style>
+    /* Simple styling for reset page */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(-45deg, #4361ee, #3f37c9, #4895ef, #4cc9f0);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #212529;
+    }
+
+    @keyframes gradientBG {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .reset-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem 3rem;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1),
+        0 6px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      color: #4361ee;
+    }
+
+    input[type='email'] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 2px solid #e9ecef;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type='email']:focus {
+      border-color: #4361ee;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #4361ee;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background: #3a56d4;
+    }
+
+    .message {
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    .error {
+      color: #f72585;
+    }
+
+    .success {
+      color: #4cc9f0;
+    }
+
+    a.back-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      color: #4361ee;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a.back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <!-- Firebase v8 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+</head>
+<body>
+  <div class="reset-card">
+    <h1>TodoCost Reset Password</h1>
+    <input
+      type="email"
+      id="email"
+      placeholder="Enter your registered email"
+      required
+      autocomplete="email"
+    />
+    <button id="reset-btn">Send Password Reset Email</button>
+    <div id="message" class="message"></div>
+    <a href="index.html" class="back-link">← Back to Login</a>
+  </div>
+
+  <script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvF2BV5MBU6AMQOByD9Q5g4wZXF0a9W1g",
+      authDomain: "movement-player.firebaseapp.com",
+      projectId: "movement-player",
+      storageBucket: "movement-player.appspot.com",
+      messagingSenderId: "55543297155",
+      appId: "1:55543297155:web:b8ef612f7041bcab7617b6",
+      measurementId: "G-0PPZM7EXZM",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const emailInput = document.getElementById("email");
+    const resetBtn = document.getElementById("reset-btn");
+    const messageDiv = document.getElementById("message");
+
+    function showMessage(text, isError = false) {
+      messageDiv.textContent = text;
+      messageDiv.className = "message " + (isError ? "error" : "success");
+    }
+
+    resetBtn.addEventListener("click", () => {
+      const email = emailInput.value.trim();
+
+      if (!email) {
+        showMessage("Please enter your email.", true);
+        return;
+      }
+
+      auth
+        .sendPasswordResetEmail(email)
+        .then(() => {
+          showMessage(
+            "Password reset email sent! Check your inbox (and spam).",
+            false
+          );
+        })
+        .catch((error) => {
+          let msg = "";
+          switch (error.code) {
+            case "auth/invalid-email":
+              msg = "Invalid email address.";
+              break;
+            case "auth/user-not-found":
+              msg = "No user found with this email.";
+              break;
+            default:
+              msg = "Error sending reset email. Try again later.";
+          }
+          showMessage(msg, true);
+        });
+    });
+  </script>
+</body>
+</html>
